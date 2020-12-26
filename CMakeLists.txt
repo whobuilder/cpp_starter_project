@@ -68,7 +68,7 @@ if(ENABLE_FUZZING)
     message("Building Fuzz Tests, using fuzzing sanitizer https://www.llvm.org/docs/LibFuzzer.html")
     add_subdirectory(fuzz_test)
   else(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
-    message(SEND_ERROR "fuzzer is supporter if only clang compiler is used")
+    message(SEND_ERROR "fuzzer is supported if only clang compiler is used")
   endif()
 endif()
 
