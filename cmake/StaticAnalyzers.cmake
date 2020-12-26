@@ -10,8 +10,7 @@ if(ENABLE_CPPCHECK)
         --suppress=missingInclude
         --enable=all
         --inline-suppr
-        --inconclusive
-    )
+        --inconclusive)
   else()
     message(SEND_ERROR "cppcheck requested but executable not found")
   endif()
@@ -20,7 +19,10 @@ endif()
 if(ENABLE_CLANG_TIDY)
   find_program(CLANGTIDY clang-tidy)
   if(CLANGTIDY)
-    set(CMAKE_CXX_CLANG_TIDY ${CLANGTIDY} -checks=*,-fuchsia*,-modernize-use-trailing-return-type,-hicpp-vararg;-extra-arg=-Wno-unknown-warning-option; -header-filter=.)
+    set(CMAKE_CXX_CLANG_TIDY
+        ${CLANGTIDY}
+        -checks=*,-fuchsia*,-modernize-use-trailing-return-type,-hicpp-vararg;-extra-arg=-Wno-unknown-warning-option;
+        -header-filter=.)
   else()
     message(SEND_ERROR "clang-tidy requested but executable not found")
   endif()
