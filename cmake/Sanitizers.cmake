@@ -4,8 +4,17 @@ function(enable_sanitizers project_name)
     option(ENABLE_COVERAGE "Enable coverage reporting for gcc/clang" FALSE)
 
     if(ENABLE_COVERAGE)
-      target_compile_options(${project_name} INTERFACE --coverage -O0 -g)
-      target_link_libraries(${project_name} INTERFACE --coverage)
+
+      if(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
+        target_compile_options(
+          ${project_name} INTERFACE -fprofile-instr-generate -fcoverage-mapping
+                                    -O0 -g)
+        target_link_libraries(${project_name} INTERFACE -fprofile-instr-generate
+                                                        -fcoverage-mapping)
+      else()
+        target_compile_options(${project_name} INTERFACE --coverage -O0 -g)
+        target_link_libraries(${project_name} INTERFACE --coverage)
+      endif()
     endif()
 
     set(SANITIZERS "")
@@ -63,4 +72,25 @@ function(enable_sanitizers project_name)
     endif()
   endif()
 
+endfunction()
+
+function(report_code_coverage target_name executable)
+  if(ENABLE_COVERAGE)
+    if(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
+
+      add_custom_command(
+        TARGET tests
+        POST_BUILD
+        COMMAND ${target_name}
+        COMMAND llvm-profdata ARGS merge --sparse default.profraw -o
+                coverage.profdata
+        COMMAND llvm-cov ARGS report ${executable}
+                -instr-profile=coverage.profdata > coverage.result
+        VERBATIM)
+    else()
+      message(
+        WARNING "Code coverage report is only supported while using clang tools"
+      )
+    endif()
+  endif()
 endfunction()
