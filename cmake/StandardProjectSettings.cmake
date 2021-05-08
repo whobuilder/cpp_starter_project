@@ -16,13 +16,12 @@ endif()
 
 # Generate compile_commands.json to make it easier to work with clang based tools
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-add_custom_target(
-  copy-compile-commands ALL
-  ${CMAKE_COMMAND}
-  -E
-  copy_if_different
-  ${CMAKE_BINARY_DIR}/compile_commands.json
-  ${CMAKE_SOURCE_DIR})
+if(EXISTS ${CMAKE_BINARY_DIR}/compile_commands.json)
+  add_custom_target(
+    copy-compile-commands ALL
+    ${CMAKE_COMMAND} -E copy_if_different
+    ${CMAKE_BINARY_DIR}/compile_commands.json ${CMAKE_SOURCE_DIR})
+endif()
 
 option(ENABLE_IPO "Enable Interprocedural Optimization, aka Link Time Optimization (LTO)" OFF)
 
